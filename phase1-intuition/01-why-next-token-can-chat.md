@@ -55,7 +55,7 @@ python3 src/chat_as_completion.py --question "What is a token?"
 | --- | --- |
 | 在跟你对话 | 训练数据里有大量对话；推理时 prompt 被排成对话格式 |
 | 听得懂指令 | Instruction fine-tuning 让 `Assistant:` 后面更像“有用的回答” |
-| 在思考 | 先采样出隐藏的推理 token，再采样可见答案。仍然是 next-token |
+| 在思考 | 先采样一段推理 token，再采样答案。普通模型的 CoT 就写在可见输出里；reasoning 模型（o1 / R1 类）把这段藏起来不给你看。两种都仍是 next-token |
 | 在查知识 | 在补全“这种问题后面通常接什么”。不是查表 |
 
 所以：
