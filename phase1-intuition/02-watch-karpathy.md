@@ -22,7 +22,11 @@
 - https://www.youtube.com/watch?v=kCc8FmEb1nY
 - 系列入口：[Zero to Hero](https://karpathy.ai/zero-to-hero.html)
 
-暂停，自己打。不要只看。
+暂停，自己打。不要只看。代码写进 [tiny-gpt/](tiny-gpt/)，它是这一阶段的核心产出物，要提交进仓库。
+
+这一步是几十小时的投入，和第一课不是一个量级。不要指望一口气跟完——
+按 [PROGRESS.md](../PROGRESS.md) 里 02.1 ~ 02.6 的小节推进，每节结束时代码必须能跑，再看下一段视频。
+硬件不构成借口：整个视频用 CPU 或免费 Colab 就够，语料只有 1MB 的莎士比亚。
 
 ## 不要做的事
 
