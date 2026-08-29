@@ -36,7 +36,15 @@ python3 src/chat_as_completion.py
 | 2 | [phase2-from-scratch/](phase2-from-scratch/) | 只跟 [LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch) |
 | 3 | [phase3-engineering/](phase3-engineering/) | KV Cache、量化、LoRA、RAG、vLLM。入口：Transformers / LLaMA-Factory |
 
-本仓库只有一个脚本：`src/chat_as_completion.py`。其余代码跟着 Karpathy 和 rasbt 写，不在这里另开一套。
+本仓库自带的脚本只有 `src/chat_as_completion.py`。但你自己的产出要提交进来：
+
+- 跟视频手写的 tiny GPT 放 [phase1-intuition/tiny-gpt/](phase1-intuition/tiny-gpt/)
+- Phase 2 每章的检查题答案放 [phase2-from-scratch/my-answers/](phase2-from-scratch/my-answers/)
+
+不 fork 别人的实现，但你亲手写的代码和答案是进度的证据，git 历史比勾选框诚实。
+
+硬件预期：Phase 1 的 tiny GPT 和 Phase 2 的小语料预训练，CPU 或免费 Colab 就够；
+真正需要 GPU 的只有 Phase 3 的 LoRA 实操。“没有显卡”不是不开始的理由。
 
 ## 只留 3 个外部资源
 
