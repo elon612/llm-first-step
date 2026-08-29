@@ -1,4 +1,4 @@
-# LLM Lesson 01
+# llm-first-step
 
 **Large language models, first lesson.**
 大模型学习第一课：token、下一个 token 预测、以及你的第一次 API 调用。
@@ -16,7 +16,7 @@ feel like: *the model sampled tokens until it decided to stop*.
 ## Layout
 
 ```
-llm-lesson-01/
+llm-first-step/
 ├── lessons/                 # read in order, 01 → 05
 │   ├── 01-what-is-an-llm.md
 │   ├── 02-tokens.md
@@ -37,8 +37,8 @@ llm-lesson-01/
 Python 3.10+ is enough for the offline demos. They use the standard library.
 
 ```bash
-git clone https://github.com/elon612/llm-lesson-01.git
-cd llm-lesson-01
+git clone https://github.com/elon612/llm-first-step.git
+cd llm-first-step
 ```
 
 Optional extras (real tokenizer + live API):
