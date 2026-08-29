@@ -5,11 +5,9 @@
 ## Phase 1 — intuition
 
 - [ ] 01 能解释：聊天是 `Assistant:` 之后的 next-token，没有单独的聊天大脑
-- [ ] 跑过 `python3 src/chat_as_completion.py`
-- [ ] 02 能解释 token ≠ 字 ≠ 词，并跑过 `tokenize_demo.py`
-- [ ] 03 能画出 score → pick → append 循环，并跑过 greedy / temperature
-- [ ] 04 跟完 Karpathy *Let's build GPT*，自己写出 tiny GPT
-- [ ] 对照过 nanoGPT，能指认 tokenizer / attn / block / generate（在 tiny GPT 之后）
+- [ ] 跑过 `python3 src/chat_as_completion.py`，做过练习
+- [ ] 02 跟完 Karpathy *Let's build GPT*，自己写出 tiny GPT
+- [ ] 对照过 nanoGPT（在 tiny GPT 之后）
 
 ## Phase 2 — LLMs-from-scratch
 

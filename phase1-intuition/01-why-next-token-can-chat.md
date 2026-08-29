@@ -104,8 +104,8 @@ GPT 做的是同一件事，只是每次预测时能看见**整段 prompt**：
 
 ## 下一步
 
-1. [02-tokens.md](02-tokens.md) — 模型读的不是字，也不是词
-2. [03-generation-loop.md](03-generation-loop.md) — 采样、temperature、上下文窗口
-3. [04-watch-karpathy.md](04-watch-karpathy.md) — 跟视频手写 tiny GPT，先不要啃 nanoGPT 源码
+去做 [exercises/01-why-it-can-chat.md](../exercises/01-why-it-can-chat.md)，然后直接跟视频手写 tiny GPT：
 
-这一阶段不要碰 RAG、Agent、LoRA。它们会在第三阶段、等你写过 Attention 之后再出现。
+[02-watch-karpathy.md](02-watch-karpathy.md)
+
+token、embedding、attention 都在视频里写，不要再开平行小课。这一阶段不要碰 RAG、Agent、LoRA。

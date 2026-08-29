@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""Phase 1, lesson 01: chatting is next-token prediction on a formatted prompt.
+"""Lesson 01: chatting is next-token prediction on a formatted prompt.
 
-A hosted chat API looks like a new product. Underneath, the server turns the
-message list into a token string that ends with the assistant role, then runs
-the ordinary generation loop.
+A chat API looks like a product. Underneath, the server turns the message
+list into a string that ends with the assistant role, then predicts the
+next token again and again.
 
-This script makes that visible with a toy word-bigram. The replies will be
-clumsy. That is the point: the *interface* is already chat. Quality is just
-better next-token prediction.
+This toy word-bigram makes the format visible. The reply will be clumsy.
+That is the point: the interface is already chat. Quality is just better
+next-token prediction.
 
-Run:
     python3 src/chat_as_completion.py
     python3 src/chat_as_completion.py --question "What is a token?"
 """
@@ -17,17 +16,16 @@ Run:
 from __future__ import annotations
 
 import argparse
+import collections
 import json
+import math
 import random
-import sys
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "src"))
-
-from bigram import WordBigramLM, load_text  # noqa: E402
-
 DEFAULT_DIALOGUES = ROOT / "data" / "tiny_dialogues.txt"
+WORD_RE = re.compile(r"User:|Assistant:|\n|[^\s]+", re.MULTILINE)
 
 
 def format_chat(question: str, history: list[tuple[str, str]] | None = None) -> str:
@@ -41,7 +39,6 @@ def format_chat(question: str, history: list[tuple[str, str]] | None = None) -> 
 
 
 def messages_payload(question: str) -> list[dict[str, str]]:
-    """The JSON a Chat Completions API actually receives."""
     return [
         {
             "role": "system",
@@ -49,6 +46,86 @@ def messages_payload(question: str) -> list[dict[str, str]]:
         },
         {"role": "user", "content": question},
     ]
+
+
+def tokenize_words(text: str) -> list[str]:
+    return WORD_RE.findall(text)
+
+
+class WordBigramLM:
+    """P(next_word | current_word). Same loop as GPT, almost no context."""
+
+    def __init__(self, counts: dict[str, collections.Counter[str]]) -> None:
+        self.counts = counts
+        self.vocab = sorted({w for row in counts.values() for w in row} | set(counts))
+
+    @classmethod
+    def train(cls, text: str) -> "WordBigramLM":
+        tokens = tokenize_words(text)
+        counts: dict[str, collections.Counter[str]] = collections.defaultdict(collections.Counter)
+        for a, b in zip(tokens, tokens[1:]):
+            counts[a][b] += 1
+        return cls(counts)
+
+    def generate(
+        self,
+        prompt: str,
+        steps: int = 24,
+        temperature: float = 0.7,
+        greedy: bool = False,
+        rng: random.Random | None = None,
+    ) -> str:
+        rng = rng or random.Random()
+        tokens = tokenize_words(prompt) or ["Assistant:"]
+        generated: list[str] = []
+        last = tokens[-1]
+        for _ in range(steps):
+            dist = self._probs(last, 0.01 if greedy else temperature)
+            nxt = _pick(dist, greedy, rng)
+            if generated and nxt in {"User:", "Assistant:"}:
+                break
+            generated.append(nxt)
+            last = nxt
+        return prompt + _detokenize(generated)
+
+    def _probs(self, last: str, temperature: float) -> dict[str, float]:
+        row = self.counts.get(last)
+        if not row:
+            if not self.vocab:
+                return {}
+            uniform = 1.0 / len(self.vocab)
+            return {item: uniform for item in self.vocab}
+        temperature = max(temperature, 1e-6)
+        logits = {item: math.log(count) / temperature for item, count in row.items()}
+        peak = max(logits.values())
+        exps = {item: math.exp(logit - peak) for item, logit in logits.items()}
+        total = sum(exps.values())
+        return {item: value / total for item, value in exps.items()}
+
+
+def _detokenize(tokens: list[str]) -> str:
+    parts: list[str] = []
+    for tok in tokens:
+        if tok == "\n":
+            parts.append("\n")
+        elif tok in {"User:", "Assistant:"}:
+            if parts and not parts[-1].endswith("\n"):
+                parts.append("\n")
+            parts.append(tok + " ")
+        else:
+            if parts and not parts[-1].endswith((" ", "\n")):
+                parts.append(" ")
+            parts.append(tok)
+    return "".join(parts)
+
+
+def _pick(dist: dict[str, float], greedy: bool, rng: random.Random) -> str:
+    if not dist:
+        return ""
+    if greedy:
+        return max(dist.items(), key=lambda item: item[1])[0]
+    items, weights = zip(*dist.items())
+    return rng.choices(items, weights=weights, k=1)[0]
 
 
 def main() -> None:
@@ -62,10 +139,9 @@ def main() -> None:
     args = parser.parse_args()
 
     prompt = format_chat(args.question)
-    model = WordBigramLM.train(load_text(args.corpus))
+    model = WordBigramLM.train(args.corpus.read_text(encoding="utf-8"))
     reply_full = model.generate(
         prompt,
-        steps=24,
         temperature=args.temperature,
         greedy=args.greedy,
         rng=random.Random(args.seed),
