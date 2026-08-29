@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lesson 01 demo: your first live LLM API call.
+"""Optional live call. Not the phase 1 mainline — chat_as_completion.py is.
 
 Talks to any OpenAI-compatible Chat Completions endpoint. Prefers xAI Grok
 when XAI_API_KEY is set.

@@ -1,0 +1,47 @@
+User: What is a cat?
+Assistant: A cat is a small animal that often lives with people.
+
+User: What is a token?
+Assistant: A token is a chunk of text that a language model reads.
+
+User: What does an LLM do?
+Assistant: An LLM predicts the next token given the tokens so far.
+
+User: Why can it chat?
+Assistant: Chat is a formatted prompt. The model continues the prompt after Assistant:
+
+User: Is it a database?
+Assistant: No. It completes patterns. It does not look up a row in a table.
+
+User: What is temperature?
+Assistant: Temperature reshapes the next-token distribution. Low is stable. High is noisy.
+
+User: What is embedding?
+Assistant: An embedding is a vector that stands in for a token so the model can compute.
+
+User: What is attention?
+Assistant: Attention lets the current token look at other tokens and pull useful values back.
+
+User: What is a Transformer block?
+Assistant: A block is attention plus a feed-forward network. GPT stacks many blocks.
+
+User: Why do long prompts get slow?
+Assistant: Attention cost grows with sequence length. Every new token attends over the past.
+
+User: 什么是猫？
+Assistant: 猫是一种常和人住在一起的小动物。
+
+User: 什么是 token？
+Assistant: token 是语言模型读入的文本块，不是自然的字或词。
+
+User: 大模型在做什么？
+Assistant: 大模型根据已经出现的 token，预测下一个 token。
+
+User: 为什么只会预测下一个 token 却能聊天？
+Assistant: 聊天只是一种提示词格式。模型在 Assistant: 后面继续写下去。
+
+User: 它是数据库吗？
+Assistant: 不是。它是在续写模式，不是在查表。
+
+User: 什么是 temperature？
+Assistant: temperature 会改变下一个 token 的分布。低更稳，高更乱。

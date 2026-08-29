@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lesson 01 demo: a language model is a next-token machine.
+"""Phase 1 demo: a language model is a next-token machine.
 
 This is a character-level bigram model. It is tiny on purpose.
 After you run it, you will have felt the three operations every LLM does:
@@ -16,77 +16,14 @@ Run:
 from __future__ import annotations
 
 import argparse
-import collections
-import math
 import random
 from pathlib import Path
+
+from bigram import CharBigramLM as BigramLM, load_text as load_corpus
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CORPUS = ROOT / "data" / "tiny_corpus.txt"
-
-
-class BigramLM:
-    """P(next_char | current_char) estimated by counting."""
-
-    def __init__(self, counts: dict[str, collections.Counter[str]]) -> None:
-        self.counts = counts
-        self.vocab = sorted({ch for row in counts.values() for ch in row} | set(counts))
-
-    @classmethod
-    def train(cls, text: str) -> "BigramLM":
-        counts: dict[str, collections.Counter[str]] = collections.defaultdict(collections.Counter)
-        for a, b in zip(text, text[1:]):
-            counts[a][b] += 1
-        return cls(counts)
-
-    def probs(self, context: str, temperature: float = 1.0) -> dict[str, float]:
-        last = context[-1] if context else " "
-        row = self.counts.get(last)
-        if not row:
-            uniform = 1.0 / len(self.vocab)
-            return {ch: uniform for ch in self.vocab}
-
-        # Convert counts to a temperature-scaled distribution.
-        # temperature -> 0  = greedy (peaky)
-        # temperature = 1   = the raw frequencies
-        # temperature > 1   = flatter / more random
-        temperature = max(temperature, 1e-6)
-        logits = {ch: math.log(count) / temperature for ch, count in row.items()}
-        max_logit = max(logits.values())
-        exps = {ch: math.exp(logit - max_logit) for ch, logit in logits.items()}
-        total = sum(exps.values())
-        return {ch: value / total for ch, value in exps.items()}
-
-    def top_k(self, context: str, k: int = 8, temperature: float = 1.0) -> list[tuple[str, float]]:
-        ranked = sorted(self.probs(context, temperature).items(), key=lambda item: -item[1])
-        return ranked[:k]
-
-    def generate(
-        self,
-        prompt: str,
-        steps: int = 80,
-        temperature: float = 0.8,
-        greedy: bool = False,
-        rng: random.Random | None = None,
-    ) -> str:
-        rng = rng or random.Random()
-        text = prompt
-        for _ in range(steps):
-            dist = self.probs(text, temperature=0.01 if greedy else temperature)
-            if greedy:
-                nxt = max(dist.items(), key=lambda item: item[1])[0]
-            else:
-                chars, weights = zip(*dist.items())
-                nxt = rng.choices(chars, weights=weights, k=1)[0]
-            text += nxt
-        return text
-
-
-def load_corpus(path: Path) -> str:
-    if not path.exists():
-        raise FileNotFoundError(f"Corpus not found: {path}")
-    return path.read_text(encoding="utf-8")
 
 
 def print_topk(model: BigramLM, prompt: str, temperature: float) -> None:

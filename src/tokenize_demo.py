@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lesson 01 demo: what a token actually is.
+"""Phase 1 demo: what a token actually is.
 
 Run:
     python3 src/tokenize_demo.py

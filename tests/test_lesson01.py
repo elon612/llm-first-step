@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline checks for lesson 01. No API key required."""
+"""Offline checks for phase 1. No API key required."""
 
 from __future__ import annotations
 
@@ -12,8 +12,43 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from bigram import CharBigramLM, WordBigramLM, load_text, tokenize_words  # noqa: E402
+from chat_as_completion import format_chat, messages_payload  # noqa: E402
 from next_token_demo import BigramLM, load_corpus  # noqa: E402
 from tokenize_demo import TinyBPE, compare  # noqa: E402
+
+
+class ChatFormatTests(unittest.TestCase):
+    def test_prompt_ends_with_assistant_role(self) -> None:
+        prompt = format_chat("What is a token?")
+        self.assertTrue(prompt.rstrip().endswith("Assistant:"))
+        self.assertIn("User: What is a token?", prompt)
+
+    def test_history_is_inlined(self) -> None:
+        prompt = format_chat("Follow up", history=[("User", "Hi"), ("Assistant", "Hello")])
+        self.assertIn("User: Hi", prompt)
+        self.assertIn("Assistant: Hello", prompt)
+        self.assertTrue(prompt.rstrip().endswith("Assistant:"))
+
+    def test_api_payload_is_messages(self) -> None:
+        payload = messages_payload("Why can it chat?")
+        self.assertEqual(payload[-1]["role"], "user")
+        self.assertEqual(payload[-1]["content"], "Why can it chat?")
+
+
+class WordBigramTests(unittest.TestCase):
+    def test_keeps_role_markers(self) -> None:
+        tokens = tokenize_words("User: Hello\nAssistant: Hi")
+        self.assertIn("User:", tokens)
+        self.assertIn("Assistant:", tokens)
+
+    def test_continues_after_assistant(self) -> None:
+        corpus = load_text(ROOT / "data" / "tiny_dialogues.txt")
+        model = WordBigramLM.train(corpus)
+        prompt = format_chat("What is a token?")
+        out = model.generate(prompt, steps=12, greedy=True)
+        self.assertTrue(out.startswith(prompt))
+        self.assertGreater(len(out), len(prompt))
 
 
 class TokenizeTests(unittest.TestCase):
@@ -36,6 +71,9 @@ class NextTokenTests(unittest.TestCase):
         model = BigramLM.train("the cat sat on the mat")
         probs = model.probs("the")
         self.assertAlmostEqual(sum(probs.values()), 1.0, places=6)
+
+    def test_char_alias_matches_export(self) -> None:
+        self.assertIs(BigramLM, CharBigramLM)
 
     def test_deterministic_greedy(self) -> None:
         corpus = load_corpus(ROOT / "data" / "tiny_corpus.txt")
