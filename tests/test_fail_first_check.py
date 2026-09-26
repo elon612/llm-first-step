@@ -31,6 +31,9 @@ ENV = {
     "RUN_TESTS": "python3",
 }
 
+# Machine-level git settings (commit signing, hooks, fsmonitor) must not leak into throwaway repos.
+HERMETIC_GIT = {"GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
+
 
 @unittest.skipUnless(shutil.which("git") and shutil.which("bash"), "needs git and bash")
 class FailFirstCheckTests(unittest.TestCase):
@@ -48,7 +51,13 @@ class FailFirstCheckTests(unittest.TestCase):
         self._tmp.cleanup()
 
     def git(self, *args: str) -> None:
-        subprocess.run(["git", *args], cwd=self.repo, check=True, capture_output=True)
+        subprocess.run(
+            ["git", *args],
+            cwd=self.repo,
+            env={**os.environ, **HERMETIC_GIT},
+            check=True,
+            capture_output=True,
+        )
 
     def write(self, rel: str, text: str) -> None:
         path = self.repo / rel
@@ -60,7 +69,7 @@ class FailFirstCheckTests(unittest.TestCase):
         self.git("commit", "-q", "-m", message)
 
     def check(self, **extra: str) -> subprocess.CompletedProcess[str]:
-        env = {**os.environ, **ENV, **extra}
+        env = {**os.environ, **HERMETIC_GIT, **ENV, **extra}
         return subprocess.run(
             ["bash", str(SCRIPT), "main"], cwd=self.repo, env=env, capture_output=True, text=True
         )
@@ -102,13 +111,37 @@ class FailFirstCheckTests(unittest.TestCase):
         self.assertEqual(self.check().returncode, 0)
         self.assertEqual(self.check(REQUIRE_TEST="1").returncode, 1)
 
+    def test_broken_test_environment_is_an_error_not_a_pass(self) -> None:
+        self.write("src/cart.py", FIXED)
+        self.write("tests/test_cart.py", BEHAVIOUR_TEST)
+        self.commit("fix quantity")
+        result = self.check(RUN_TESTS="no-such-test-runner")
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn("在当前代码上就失败", result.stderr)
+
+    def test_renaming_a_test_while_weakening_it_is_checked(self) -> None:
+        self.write("tests/test_cart.py", BEHAVIOUR_TEST.replace("== 6", "== 2"))
+        self.commit("characterise current behaviour")
+        self.git("branch", "-f", "main")
+        self.git("mv", "tests/test_cart.py", "tests/test_cart_total.py")
+        self.write("src/cart.py", FIXED)
+        self.write("tests/test_cart_total.py", TAUTOLOGY_TEST)
+        self.commit("fix quantity, rename test")
+        result = self.check()
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("tests/test_cart_total.py", result.stdout)
+
     def test_worktree_is_cleaned_up(self) -> None:
         self.write("src/cart.py", FIXED)
         self.write("tests/test_cart.py", BEHAVIOUR_TEST)
         self.commit("fix quantity")
         self.check()
         listing = subprocess.run(
-            ["git", "worktree", "list"], cwd=self.repo, capture_output=True, text=True
+            ["git", "worktree", "list"],
+            cwd=self.repo,
+            env={**os.environ, **HERMETIC_GIT},
+            capture_output=True,
+            text=True,
         ).stdout
         self.assertEqual(len(listing.strip().splitlines()), 1, listing)
 

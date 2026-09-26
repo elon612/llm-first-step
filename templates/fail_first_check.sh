@@ -4,25 +4,29 @@
 # 一条测试在修复前后都通过，就证明不了它能抓住这次的 bug：
 # 要么是同义反复，要么测偏了地方。修复前的代码就是一个现成的“变异体”。
 #
+# 每条测试跑两次：当前代码上必须通过（排除环境故障），改动前的代码上必须失败。
+# 重命名按“新增”处理，改名时顺手放宽断言也会被检查到。
+#
 # 用法：
 #   fail_first_check.sh [base-ref]            # 默认 origin/main
 #
 # 环境变量：
-#   TEST_PATH_RE     要回放的测试文件（默认 test/、integration_test/ 下的 *_test.dart）
+#   TEST_PATH_RE     要回放的测试文件（默认 test/ 下的 *_test.dart；integration_test 需要设备，默认不跑）
 #   TEST_SUPPORT_RE  需要一起带到旧代码上的文件，如 fixture、fake（默认 test/、integration_test/ 下所有文件）
 #   SRC_PATH_RE      实现文件（默认 lib/ 下的 .dart）；分支没有改实现时直接跳过
-#   RUN_TESTS        在旧代码根目录执行的命令，最后一个参数是测试文件路径；
+#   RUN_TESTS        在仓库根目录执行的命令，最后一个参数是测试文件路径；
 #                    默认按最近的 pubspec.yaml 分包运行 flutter test / dart test
 #   REQUIRE_TEST=1   改了实现却没有任何测试改动时判失败（默认只告警）
 #
 # 豁免：分支内任一提交信息含一行 `Fail-First: skip <理由>`（纯重构、性能优化等不改行为的改动）。
 #
-# 退出码：0 通过或跳过；1 有测试在改动前就通过，或 REQUIRE_TEST=1 时缺测试；2 用法错误。
+# 退出码：0 通过或跳过；1 有测试在改动前就通过，或 REQUIRE_TEST=1 时缺测试；
+#         2 用法错误，或测试在当前代码上就失败（环境问题或测试本身是坏的，无法判断）。
 
 set -euo pipefail
 
 base_ref="${1:-origin/main}"
-TEST_PATH_RE="${TEST_PATH_RE:-(^|/)(test|integration_test)/.*_test\.dart$}"
+TEST_PATH_RE="${TEST_PATH_RE:-(^|/)test/.*_test\.dart$}"
 TEST_SUPPORT_RE="${TEST_SUPPORT_RE:-(^|/)(test|integration_test)/}"
 SRC_PATH_RE="${SRC_PATH_RE:-(^|/)lib/.*\.dart$}"
 
@@ -40,7 +44,7 @@ if git log --format=%B "$base..HEAD" | grep -qiE '^Fail-First: skip'; then
   exit 0
 fi
 
-changed="$(git diff --name-only --diff-filter=AM "$base" HEAD)"
+changed="$(git diff --name-only --no-renames --diff-filter=AM "$base" HEAD)"
 tests="$(grep -E "$TEST_PATH_RE" <<<"$changed" || true)"
 support="$(grep -E "$TEST_SUPPORT_RE" <<<"$changed" || true)"
 src="$(grep -E "$SRC_PATH_RE" <<<"$changed" || true)"
@@ -85,7 +89,7 @@ run_default() {
   local rel="${file#"$dir"/}"
   (
     cd "$dir"
-    if grep -qE '^\s*sdk:\s*flutter' pubspec.yaml; then
+    if grep -qE '^[[:space:]]*sdk:[[:space:]]*flutter' pubspec.yaml; then
       flutter pub get >/dev/null && flutter test "$rel"
     else
       dart pub get >/dev/null && dart test "$rel"
@@ -94,18 +98,24 @@ run_default() {
 }
 
 run_one() {
-  local file="$1"
+  local where="$1" file="$2"
   if [[ -n "${RUN_TESTS:-}" ]]; then
-    (cd "$wt" && bash -c "$RUN_TESTS \"\$1\"" _ "$file")
+    (cd "$where" && bash -c "$RUN_TESTS \"\$1\"" _ "$file")
   else
-    (cd "$wt" && run_default "$file")
+    (cd "$where" && run_default "$file")
   fi
 }
 
+log="$wt/.fail-first.log"
 offenders=()
 while IFS= read -r f; do
   [[ -z "$f" ]] && continue
-  if run_one "$f" >"$wt/.fail-first.log" 2>&1; then
+  if ! run_one "$root" "$f" >"$log" 2>&1; then
+    echo "fail-first: $f 在当前代码上就失败，无法判断（环境问题，或者测试本身是坏的）：" >&2
+    tail -n 20 "$log" | sed 's/^/  /' >&2
+    exit 2
+  fi
+  if run_one "$wt" "$f" >"$log" 2>&1; then
     offenders+=("$f")
   else
     echo "fail-first: ok  $f 在改动前失败"
