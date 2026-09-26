@@ -23,6 +23,71 @@
 - **后训练值得懂，不值得先做**。模型为什么会调用工具、为什么写代码比写散文稳、为什么会“讨好”你——答案都在后训练里。但你手上的前沿模型已经被厂商后训练过，自己微调很难超过它们。
 - **coding agent 里经典向量 RAG 的地位在下降**。代码是结构化、可精确搜索的，主流 agent 更多靠 `grep` / 读文件 / 代码索引做“agentic search”。向量 RAG 更适合大量非结构化文档（产品文档、工单、知识库）。
 
+## 概念这么多，怎么选？
+
+判断标准只有一个：**学完之后，明天用 agent 的方式会不会变？**
+
+以下按移动端（Android / iOS / Flutter）应用层开发、主要用 agent 写代码来分层。
+
+### 第一层：必须掌握（直接改变你怎么用 agent）
+
+| 概念 | 为什么对你重要 |
+| --- | --- |
+| token、上下文窗口 | 解释 agent 为什么“忘了”前面的约定、为什么大文件要分段读 |
+| context rot（长上下文退化） | 解释为什么长对话越来越差、什么时候该开新对话 |
+| tool calling / agent 循环 | 知道 agent 每一步在干什么，才能判断它卡在哪 |
+| 上下文工程（rules、`AGENTS.md`） | 把项目约定（状态管理方案、目录结构、命名）固定下来 |
+| 知识截止日期 | Flutter / Dart、SwiftUI、Jetpack Compose 的 API 变化快，模型常写旧 API |
+| MCP | 把最新文档、设计稿、issue 接进 agent，补上知识截止 |
+| 幻觉 | 编造不存在的 pub 包、方法名、Gradle 配置；学会让它先查再写 |
+| reasoning 模型 / thinking | 什么任务值得用慢而贵的推理模型（架构、疑难 bug），什么不值得（改文案） |
+| 可验证反馈 | `flutter analyze`、`flutter test`、`xcodebuild`、`./gradlew` 让 agent 自己验证 |
+| 多模态输入 | UI 问题给截图，比文字描述准得多 |
+| 成本与 prompt caching | 看懂用量、知道为什么 rules 要稳定 |
+
+### 第二层：知道一句话就够（用来判断、交流、选工具）
+
+| 概念 | 一句话 |
+| --- | --- |
+| 预训练 / SFT / RLHF / RL | 模型能力和“性格”的来源；coding 强是因为代码能跑测试、奖励可验证 |
+| RAG / embedding | 把检索到的内容拼进 prompt；coding agent 多用 grep 代替 |
+| 微调 / LoRA | 改权重；应用开发者几乎用不到 |
+| 量化 | 用更低精度存权重，换更小体积、更快速度 |
+| KV Cache | 缓存已算过的中间结果，所以首 token 慢、后面快 |
+| MoE | 总参数大、每次只激活一部分，所以大模型也能便宜 |
+| 蒸馏 | 用大模型教小模型；“mini / flash”模型大多这么来 |
+| 结构化输出 | 强制模型按 JSON schema 输出 |
+| Benchmark（SWE-bench 等） | 看模型榜单时知道它测的是什么、为什么不等于你的项目 |
+
+### 第三层：暂时忽略（模型研发 / 基础设施的事）
+
+Attention 的数学推导、反向传播、位置编码（RoPE）、BPE 算法细节、分布式训练、PPO / GRPO 等 RL 算法、
+vLLM 等推理服务部署、FlashAttention、scaling law 推导。
+
+想看懂它们，走 [ROADMAP.md](ROADMAP.md) 的原理路线；不看也不影响把 agent 用好。
+
+### 条件分支：如果 App 本身要加 AI 功能
+
+那就不只是“用 agent”，而是“做 LLM 应用”，这些会从第二层升到第一层：
+
+- 端侧模型：Apple Foundation Models 框架、Android Gemini Nano（ML Kit GenAI）、MediaPipe LLM Inference、llama.cpp
+- 量化（决定模型能不能装进手机）、延迟、流式输出
+- 结构化输出、RAG、评估
+- 云端 vs 端侧的成本、隐私、离线取舍
+
+## 移动端开发者特别要知道的
+
+agent 在移动端的表现通常不如 Web / 后端，原因都能用上面的概念解释：
+
+| 现象 | 原因 | 对策 |
+| --- | --- | --- |
+| 写出已废弃的 API | 训练数据里旧版本多，且有知识截止 | 在 rules 里写明 SDK 版本；用 MCP 或直接贴官方文档 |
+| 编造 pub 包 / 方法 | 幻觉：补全“看起来合理的”名字 | 要求先查 `pubspec.yaml` / 官方文档再写 |
+| UI 改完不对 | agent 看不到屏幕 | 给截图；让它跑 widget test / golden test |
+| 改了 Dart 忘了原生侧 | platform channel 横跨 Dart / Kotlin / Swift，文件不在上下文里 | 明确列出要改的三端文件 |
+| 乱改生成代码 | 分不清 `*.g.dart`、`*.freezed.dart` 是生成的 | rules 里写明“不改生成文件，改完跑 build_runner” |
+| 构建报错来回修 | 没有可验证反馈，靠猜 | 让它每次改完跑 `flutter analyze` 和对应测试 |
+
 ## 阶段 0：最小原理（够用就停）
 
 目标：能用“next-token + 上下文窗口”解释 agent 的大部分怪行为。
@@ -55,6 +120,7 @@ loop:
 - 读 Anthropic — [Building effective agents](https://www.anthropic.com/research/building-effective-agents)
 - 读 [mini-swe-agent](https://github.com/SWE-agent/mini-swe-agent)（约百行的真实 coding agent）
 - **自己写一个**：`read_file`、`grep`、`write_file`、`run_tests` 四个工具，用任意模型 API，让它修一个故意写错的函数
+  （可以直接拿一个小 Dart 包，`run_tests` 就是 `dart test`）
 
 学完能回答：
 
@@ -81,10 +147,14 @@ loop:
 | 指明文件路径而不是描述 | 省掉一轮检索，也减少检索错位 |
 
 练习：挑一个你们项目里 agent 常做砸的任务，只改上下文（rules、给的文件、给的测试），不换模型，记录前后差异。
+移动端的起点：给 Flutter 项目写一份 `AGENTS.md`，写清 Flutter / Dart 版本、状态管理方案、目录约定、生成文件规则、
+每次改完要跑的 `flutter analyze` / `flutter test` 命令。
 
 ## 阶段 3：检索与 RAG
 
 目标：知道什么时候需要 RAG，什么时候 `grep` 就够。
+
+只用 agent 写代码的话，这一阶段可以只看概念、跳过练习；App 要加 AI 功能时再回来做。
 
 - 概念：embedding、chunking、向量检索、BM25、混合检索、rerank
 - 对照：agentic search（agent 多轮搜索、读文件）vs 一次性 RAG（检索一次拼进 prompt）
