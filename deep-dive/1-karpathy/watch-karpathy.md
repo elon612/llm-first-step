@@ -1,4 +1,4 @@
-# 02. 跟 Karpathy 把手写出来（先别啃 nanoGPT）
+# D1. 跟 Karpathy 把手写出来（先别啃 nanoGPT）
 
 第一课已经回答机制：聊天是 `Assistant:` 后面的 next-token。
 
@@ -25,7 +25,7 @@
 暂停，自己打。不要只看。代码写进 [tiny-gpt/](tiny-gpt/)，它是这一阶段的核心产出物，要提交进仓库。
 
 这一步是几十小时的投入，和第一课不是一个量级。不要指望一口气跟完——
-按 [PROGRESS.md](../PROGRESS.md) 里 02.1 ~ 02.6 的小节推进，每节结束时代码必须能跑，再看下一段视频。
+按 [PROGRESS.md](../../PROGRESS.md) 里 deep-dive 的 D1.1 ~ D1.6 小节推进，每节结束时代码必须能跑，再看下一段视频。
 硬件不构成借口：整个视频用 CPU 或免费 Colab 就够，语料只有 1MB 的莎士比亚。
 
 ## 不要做的事
@@ -60,4 +60,4 @@
 - 能在纸上画出上面那条链，并指到自己的代码
 - 再浏览 nanoGPT，能说出每个文件在链上的位置
 
-然后进入第二阶段，只跟 [rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch)。见 [`../phase2-from-scratch/`](../phase2-from-scratch/README.md)。
+然后进入 deep-dive 第 2 段，只跟 [rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch)。见 [`../2-from-scratch/`](../2-from-scratch/README.md)。

@@ -1,4 +1,4 @@
-# Phase 2 chapter checks
+# Deep-dive 2 chapter checks
 
 每学完 rasbt 的一章，合上书回答。写不出就回去重写那一章的代码，不要往下翻。
 
@@ -42,4 +42,4 @@
 - 只训 assistant token 的 loss、不训 user token 的 loss，原因是什么？
 - 到这里，你能不能用一段话连接：next-token → 预训练续写 → 指令微调后会聊天？
 
-写完 Ch 7 的答案，再打开 [`../phase3-engineering/`](../phase3-engineering/README.md)。
+写完 Ch 7 的答案，再打开 [`../3-engineering/`](../3-engineering/README.md)。
