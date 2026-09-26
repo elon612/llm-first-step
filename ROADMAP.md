@@ -1,50 +1,29 @@
 # Roadmap
 
-一条主线，一个仓库。不要同时铺开十几个教程仓库。
+应用优先：先把每天在用的东西拆开，原理只挖到能解释行为为止。
 
-```text
-Karpathy 建立直觉
-        ↓
-LLMs-from-scratch 系统补全
-        ↓
-再进入 RAG / 微调 / 部署
-```
+风险不是学不会，是每天追新名词、换教程，却从没拆开过一次自己手上的 agent。
+遇到新名词，先用 [00 概念地图](lessons/00-concept-map.md) 的三个问题筛一遍。
 
-llm-course、Datawhale、Awesome-LLM 只当索引。风险不是学不会，是每天换教程，Attention 却从没写过一次。
+## 主线
 
-## 现在
+| 课 | 回答的问题 | 产出 |
+| --- | --- | --- |
+| [00](lessons/00-concept-map.md) | 这么多概念，先学哪个 | 知道什么可以先不学 |
+| [01](lessons/01-why-next-token-can-chat.md) | 只会预测下一个 token，为什么能聊天 | 跑过 `chat_as_completion.py`，做完练习 01 |
+| [02](lessons/02-agent-is-a-loop.md) | coding agent 在循环里到底做了什么 | 跑过 `agent_loop.py`；练习 02 换成真模型 |
+| [03](lessons/03-context-engineering.md) | 为什么“先计划、拆小、给测试、写 rules”有效 | 你项目里的 `AGENTS.md`，一次前后对比 |
+| [04](lessons/04-verify-and-eval.md) | 怎么知道改了之后变好了 | 10 个任务的评估集 |
+| [05](lessons/05-how-models-are-trained.md) | 模型的行为从哪来；要不要微调 | 能把 agent 的行为对回训练阶段 |
+| [06](lessons/06-cost-and-latency.md) | 钱花在哪，为什么慢 | 估算过一次真实任务的花费 |
 
-[phase1-intuition/01-why-next-token-can-chat.md](phase1-intuition/01-why-next-token-can-chat.md)
+01–04 是核心，建议按顺序、做完产出再往下。05、06 可以穿插。
 
-勾选：[PROGRESS.md](PROGRESS.md)
+## 分支
 
-## Phase 1 — Karpathy
+[07 — App 本身要加 AI 功能](lessons/07-ai-inside-your-app.md)：云端 vs 端侧、流式与结构化输出、RAG、评估。有需求时再学。
 
-[phase1-intuition/](phase1-intuition/)
+## 可选：原理路线
 
-1. 为什么只会预测下一个 token，却能聊天
-2. 跟 [Let's build GPT](https://www.youtube.com/watch?v=kCc8FmEb1nY) 手写 tiny GPT
-
-禁止：RAG、Agent、LoRA、直接啃 [nanoGPT](https://github.com/karpathy/nanoGPT)。
-nanoGPT 留给 tiny GPT 写完之后对照。
-
-## Phase 2 — rasbt/LLMs-from-scratch
-
-[phase2-from-scratch/](phase2-from-scratch/)
-
-主教材：[rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch)
-
-Tokenizer → Embedding → Self Attention → Multi-head → GPT → Pretraining → Instruction Fine-tuning
-
-## Phase 3 — 工程
-
-[phase3-engineering/](phase3-engineering/)
-
-KV Cache、量化、LoRA / QLoRA、RAG、vLLM / llama.cpp。
-入口：Hugging Face Transformers + LLaMA-Factory。Phase 2 写完再打开。
-
-## 外部资源只留 3 个
-
-1. Karpathy — Let's build GPT
-2. `rasbt/LLMs-from-scratch`
-3. Hugging Face / LLaMA-Factory（第三阶段）
+[deep-dive/](deep-dive/README.md)：Karpathy 手写 tiny GPT → rasbt/LLMs-from-scratch → KV Cache / 量化 / LoRA。
+不是主线前置条件；做完之后，03、06 里的很多“为什么”会变得显然。

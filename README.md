@@ -1,24 +1,25 @@
 # llm-first-step
 
-一条主线，一个仓库：
+给**每天用 agent 写代码**、但想知道“为什么这么用更好”的开发者。
+例子以 Android / iOS / Flutter 应用层开发为主。
+
+一条主线：
 
 ```text
-Karpathy 建立直觉
+先选对概念（00）
         ↓
-rasbt/LLMs-from-scratch 系统补全
+聊天 = next-token（01）→ agent = 循环 + 工具（02）
         ↓
-再进入 RAG / 微调 / 部署
+上下文工程（03）→ 验证与评估（04）
+        ↓
+模型怎么训出来的（05）→ 成本与延迟（06）
+        ↓
+分支：App 要加 AI 功能（07）    可选：手写 GPT 的原理路线（deep-dive）
 ```
 
-第一课不是 Transformer 是什么，而是：
-
-> **为什么 LLM 只做 next-token prediction，却能聊天？**
+每一课都用同一句话解释新东西：**模型只做 next-token，一切能力差异都来自训练和上下文。**
 
 [ROADMAP.md](ROADMAP.md) · [PROGRESS.md](PROGRESS.md)
-
-每天用 agent 写代码、想先搞懂“为什么这么用更好”？走应用优先的
-[AGENT-TRACK.md](AGENT-TRACK.md)：同样从第一课开始，然后拆 agent、上下文工程、RAG、评估，
-后训练只要求懂原理。下面的三阶段变成它的可选加深。
 
 ## 今天
 
@@ -26,35 +27,32 @@ rasbt/LLMs-from-scratch 系统补全
 git clone https://github.com/elon612/llm-first-step.git
 cd llm-first-step
 python3 src/chat_as_completion.py
+python3 src/agent_loop.py
 ```
 
-读 [phase1-intuition/01-why-next-token-can-chat.md](phase1-intuition/01-why-next-token-can-chat.md)，做 [exercises/01-why-it-can-chat.md](exercises/01-why-it-can-chat.md)。
+先读 [lessons/00-concept-map.md](lessons/00-concept-map.md)，再读 [lessons/01-why-next-token-can-chat.md](lessons/01-why-next-token-can-chat.md)。
 
-走原理路线时不要碰 RAG / Agent / LoRA，也不要先啃 nanoGPT。
+## 目录
 
-## 三阶段
+| 目录 | 放什么 |
+| --- | --- |
+| [lessons/](lessons/) | 主线课程 00–07 |
+| [exercises/](exercises/) | 练习；你写的代码和答案要提交 |
+| [templates/](templates/) | 直接复制到你项目里用：`AGENTS.md`（Flutter）、评估任务集 |
+| [src/](src/) | 离线可跑的演示脚本，不需要 API key |
+| [deep-dive/](deep-dive/) | 可选：跟 Karpathy 手写 GPT → LLMs-from-scratch → 推理与微调工程 |
 
-| 阶段 | 目录 | 做什么 |
-| --- | --- | --- |
-| 1 | [phase1-intuition/](phase1-intuition/) | 第一课搞懂聊天 = next-token；再跟 [Let's build GPT](https://www.youtube.com/watch?v=kCc8FmEb1nY) 手写 tiny GPT |
-| 2 | [phase2-from-scratch/](phase2-from-scratch/) | 只跟 [LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch) |
-| 3 | [phase3-engineering/](phase3-engineering/) | KV Cache、量化、LoRA、RAG、vLLM。入口：Transformers / LLaMA-Factory |
+测试：`python3 -m unittest discover -s tests`
 
-本仓库自带的脚本只有 `src/chat_as_completion.py`。但你自己的产出要提交进来：
+硬件：主线只需要能跑 Python 3.10+。练习 02 需要一个模型 API key。只有 deep-dive 的 LoRA 实操需要 GPU。
 
-- 跟视频手写的 tiny GPT 放 [phase1-intuition/tiny-gpt/](phase1-intuition/tiny-gpt/)
-- Phase 2 每章的检查题答案放 [phase2-from-scratch/my-answers/](phase2-from-scratch/my-answers/)
+## 外部资源，主线只留这几个
 
-不 fork 别人的实现，但你亲手写的代码和答案是进度的证据，git 历史比勾选框诚实。
-
-硬件预期：Phase 1 的 tiny GPT 和 Phase 2 的小语料预训练，CPU 或免费 Colab 就够；
-真正需要 GPU 的只有 Phase 3 的 LoRA 实操。“没有显卡”不是不开始的理由。
-
-## 只留 3 个外部资源
-
-1. Karpathy — Let's build GPT
-2. [rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch)
-3. Hugging Face / LLaMA-Factory（第三阶段）
+1. Karpathy — [Deep Dive into LLMs like ChatGPT](https://www.youtube.com/watch?v=7xTGNNLPyMI)（01、05）
+2. Anthropic — [Building effective agents](https://www.anthropic.com/research/building-effective-agents)（02）
+3. Anthropic — [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)（03）
+4. Hamel Husain — [Your AI Product Needs Evals](https://hamel.dev/blog/posts/evals/)（04）
+5. Chip Huyen — *AI Engineering*（07，需要时再读）
 
 ## License
 
