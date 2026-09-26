@@ -16,6 +16,10 @@ rasbt/LLMs-from-scratch 系统补全
 
 [ROADMAP.md](ROADMAP.md) · [PROGRESS.md](PROGRESS.md)
 
+每天用 agent 写代码、想先搞懂“为什么这么用更好”？走应用优先的
+[AGENT-TRACK.md](AGENT-TRACK.md)：同样从第一课开始，然后拆 agent、上下文工程、RAG、评估，
+后训练只要求懂原理。下面的三阶段变成它的可选加深。
+
 ## 今天
 
 ```bash
@@ -26,7 +30,7 @@ python3 src/chat_as_completion.py
 
 读 [phase1-intuition/01-why-next-token-can-chat.md](phase1-intuition/01-why-next-token-can-chat.md)，做 [exercises/01-why-it-can-chat.md](exercises/01-why-it-can-chat.md)。
 
-不要碰 RAG / Agent / LoRA，也不要先啃 nanoGPT。
+走原理路线时不要碰 RAG / Agent / LoRA，也不要先啃 nanoGPT。
 
 ## 三阶段
 
