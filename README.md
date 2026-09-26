@@ -38,7 +38,8 @@ python3 src/agent_loop.py
 | --- | --- |
 | [lessons/](lessons/) | 主线课程 00–07 |
 | [exercises/](exercises/) | 练习；你写的代码和答案要提交 |
-| [templates/](templates/) | 直接复制到你项目里用：`AGENTS.md`（Flutter）、评估任务集 |
+| [templates/](templates/) | 直接复制到你项目里用：`AGENTS.md`（Flutter）、评估任务集、fail-first 门禁脚本 |
+| [case-studies/](case-studies/) | 生产问题的完整设计，把课程概念用在真实项目上 |
 | [src/](src/) | 离线可跑的演示脚本，不需要 API key |
 | [deep-dive/](deep-dive/) | 可选：跟 Karpathy 手写 GPT → LLMs-from-scratch → 推理与微调工程 |
 
