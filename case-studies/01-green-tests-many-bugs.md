@@ -247,9 +247,16 @@ BLE 之于移动端，就像第三方服务之于后端。结构同上：只替�
 bash templates/fail_first_check.sh "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
 ```
 
-它会在修复前的代码上开一个 git worktree，把分支里改过的 `test/`、`integration_test/` 文件（包括 fixture）拷过去，逐个运行改过的测试，按最近的 `pubspec.yaml` 选择 `flutter test` 或 `dart test`。有测试在旧代码上通过就判失败。
+它会在修复前的代码上开一个 git worktree，把分支里改过的 `test/`、`integration_test/` 文件（包括 fixture）拷过去，然后对每条改过的 `test/` 下的测试跑两次，按最近的 `pubspec.yaml` 选择 `flutter test` 或 `dart test`：
+
+- 在当前代码上必须通过。不通过就退出码 2，报“无法判断”，而不是放行——否则 SDK 没装好、`pub get` 失败时，每条测试都会“在旧代码上失败”，门禁就会悄悄全部放行
+- 在修复前的代码上必须失败。通过了就退出码 1
+
+重命名的测试文件按新增处理，所以“改个文件名、顺手放宽断言”也会被检查到。
 
 已知局限：
+
+- `integration_test/` 需要设备，默认不回放，只作为支持文件拷贝；E2E 的 fail-first 放到夜间的设备流水线里做
 
 - 新功能的测试在旧代码上常常是**编译失败**，脚本也会算作“失败”。这对新功能来说没问题，但它证明不了太多——fail-first 主要对修复类改动有意义
 - monorepo 里每个包都要 `pub get`，CI 上要缓存 pub 目录，否则会慢
