@@ -19,6 +19,10 @@
 
 01–04 是核心，建议按顺序、做完产出再往下。05、06 可以穿插。
 
+## 案例
+
+[01 — 测试全绿，Bug 还是很多](case-studies/01-green-tests-many-bugs.md)：04 的实战版。独立 Oracle、接缝测试、fail-first 门禁、度量与路线图。
+
 ## 分支
 
 [07 — App 本身要加 AI 功能](lessons/07-ai-inside-your-app.md)：云端 vs 端侧、流式与结构化输出、RAG、评估。有需求时再学。

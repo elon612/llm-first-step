@@ -42,6 +42,12 @@
 
 不需要自动化。表格加 git 分支就够用。重要的是**同一批任务、同一套标准**。
 
+## 真实案例
+
+[案例 01：测试全绿，Bug 还是很多](../case-studies/01-green-tests-many-bugs.md)：一个 Flutter monorepo 有 1,594 个测试文件，
+一半以上的提交仍然在修 bug。原因是测试和实现出自同一个 agent 的上下文，而 bug 住在接缝里。
+案例里的 [fail_first_check.sh](../templates/fail_first_check.sh) 把“测试必须先在旧代码上失败”变成了 CI 检查。
+
 ## 这一课结束的标准
 
 - 能说出五种验证信号的强弱顺序，以及“模型自述”为什么最弱
