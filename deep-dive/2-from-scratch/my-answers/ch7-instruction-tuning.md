@@ -18,4 +18,4 @@
 
 （待写）
 
-写完这一篇，Phase 2 结束。打开 [phase3-engineering/](../../phase3-engineering/README.md)。
+写完这一篇，deep-dive 第 2 段结束。打开 [3-engineering/](../../3-engineering/README.md)。

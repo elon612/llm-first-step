@@ -97,15 +97,15 @@ GPT 做的是同一件事，只是每次预测时能看见**整段 prompt**：
 
 ## 这一课结束的标准
 
-能不看笔记说出下面这段，再进入 02：
+能不看笔记说出下面这段，再进入第二课：
 
 > 聊天是一种 prompt 格式。模型在 `Assistant:` 后面反复采样下一个 token。
 > 没有单独的聊天大脑。更好的模型只是在同一种循环里，看见了更长的上下文、学到了更好的统计。
 
 ## 下一步
 
-去做 [exercises/01-why-it-can-chat.md](../exercises/01-why-it-can-chat.md)，然后直接跟视频手写 tiny GPT：
+去做 [exercises/01-why-it-can-chat.md](../exercises/01-why-it-can-chat.md)，然后进入第二课：
 
-[02-watch-karpathy.md](02-watch-karpathy.md)
+[02-agent-is-a-loop.md](02-agent-is-a-loop.md)——把同一个循环套上工具，就是你每天在用的 coding agent。
 
-token、embedding、attention 都在视频里写，不要再开平行小课。这一阶段不要碰 RAG、Agent、LoRA。
+想亲手写出 Tokenizer → Attention → GPT 这条链，走可选的 [deep-dive/](../deep-dive/README.md)。不走也不影响后面的课。

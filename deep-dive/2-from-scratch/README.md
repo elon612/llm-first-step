@@ -1,6 +1,6 @@
-# Phase 2 — 主教材：LLMs-from-scratch
+# D2 — 主教材：LLMs-from-scratch
 
-第一阶段建立直觉以后，**只跟一个仓库**学系统：
+跟 Karpathy 写完 tiny GPT 以后，**只跟一个仓库**学系统：
 
 [rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch)
 
@@ -54,6 +54,6 @@ Attention 那一章的合格线仍然是：
 - Karpathy 视频已经让你写过一遍 tiny GPT。
 - 现在用 rasbt 把每一层写扎实，并补上预训练和指令微调。
 
-第二阶段结束的标志：你能从零画出 GPT 前向，并能解释指令微调如何把“续写网页”变成“像助手那样接 `Assistant:`”。
+这一段结束的标志：你能从零画出 GPT 前向，并能解释指令微调如何把“续写网页”变成“像助手那样接 `Assistant:`”。
 
-在那之前，不要开始第三阶段的 RAG / LoRA / vLLM。
+在那之前，不要开始 [3-engineering/](../3-engineering/README.md) 的 LoRA / vLLM 实操。
